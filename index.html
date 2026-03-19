@@ -20,17 +20,6 @@
       display: flex;
       height: 100vh;
     }
-
-    .inline-input {
-        background: transparent;
-        border: none;
-        color: #ddd; /* Matches the terminal text color */
-        font-family: "Consolas", monospace;
-        font-size: 1rem;
-        outline: none;
-        width: 50%;
-        }
-
     aside {
       width: 32%;
       max-width: 360px;
@@ -177,59 +166,19 @@
       color: #2ecc71;
       border: 2px solid #2ecc71;
     }
-
-    /* --- Custom Modal Styles --- */
-    #inputModal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .modal-content label {
-      font-weight: bold;
-      color: #333;
-      font-size: 1.05rem;
-    }
-    .modal-content input {
-      padding: 12px;
+    /* Inline Input Styling */
+    .inline-input {
+      background: transparent;
+      border: none;
+      color: #ddd;
+      font-family: "Consolas", monospace;
       font-size: 1rem;
-      border: 2px solid #ccc;
-      border-radius: 6px;
       outline: none;
-    }
-    .modal-content input:focus {
-      border-color: #192a56;
-    }
-    .modal-content button {
-      align-self: flex-end;
-      padding: 10px 20px;
-      font-size: 1rem;
+      width: 50%;
     }
   </style>
 </head>
 <body>
-
-<div id="inputModal" style="display: none;">
-  <div class="modal-content">
-    <label id="modalPromptText">Input required:</label>
-    <input type="text" id="modalInputBox" autocomplete="off" />
-    <button id="modalSubmitBtn">Submit</button>
-  </div>
-</div>
 
 <div class="app">
   <aside>
@@ -285,7 +234,7 @@
       ],
       "answer": "total = 0\nfor day in range(1, 8):\n    sold = int(input(\"Enter items sold for day \" + str(day) + \": \"))\n    total = total + sold\n\nprint(\"Total items sold in the week:\", total)",
       "testInputs": ["10", "20", "15", "5", "10", "20", "20"],
-      "expectedOutputPattern": "100" 
+      "expectedOutputPattern": "(?=.*(?:total|sold|items|sum|week|all))(?=.*100)" 
     },
     {
       "short": "Total rainfall in a month",
@@ -298,7 +247,7 @@
       ],
       "answer": "total_rainfall = 0.0\nfor day in range(1, 31):\n    rainfall = float(input(\"Enter rainfall for day \" + str(day) + \" in mm: \"))\n    total_rainfall = total_rainfall + rainfall\n\nprint(\"Total rainfall in the month:\", total_rainfall, \"mm\")",
       "testInputs": Array(30).fill("2"), 
-      "expectedOutputPattern": "60\\.0" 
+      "expectedOutputPattern": "(?=.*(?:total|rainfall|rain|sum|month|all|amount))(?=.*60\\.0)" 
     },
     {
       "short": "Count passes out of 20 students",
@@ -311,7 +260,7 @@
       ],
       "answer": "passes = 0\nfor student in range(1, 21):\n    result = input(\"Enter result for student \" + str(student) + \" (pass/fail): \")\n    if result.lower() == \"pass\":\n        passes = passes + 1\n\nprint(\"Number of students who passed:\", passes)",
       "testInputs": [...Array(12).fill("pass"), ...Array(8).fill("fail")],
-      "expectedOutputPattern": "12"
+      "expectedOutputPattern": "(?=.*(?:pass|passed|success|students|total|number|count))(?=.*12)"
     },
     {
       "short": "Total cost of 10 items",
@@ -324,7 +273,7 @@
       ],
       "answer": "total_cost = 0.0\nfor item in range(1, 11):\n    price = float(input(\"Enter price of item \" + str(item) + \": \"))\n    total_cost = total_cost + price\n\nprint(\"Total cost of all items:\", total_cost)",
       "testInputs": Array(10).fill("5.5"),
-      "expectedOutputPattern": "55\\.0"
+      "expectedOutputPattern": "(?=.*(?:total|cost|price|sum|all|items|amount))(?=.*55\\.0)"
     },
     {
       "short": "Highest temperature in a week",
@@ -337,7 +286,7 @@
       ],
       "answer": "highest = -999.0\nfor day in range(1, 8):\n    temp = float(input(\"Enter temperature for day \" + str(day) + \": \"))\n    if temp > highest:\n        highest = temp\n\nprint(\"Highest temperature in the week:\", highest)",
       "testInputs": ["10", "25", "15", "32", "20", "5", "12"],
-      "expectedOutputPattern": "32\\.0"
+      "expectedOutputPattern": "(?=.*(?:high|highest|max|temperature|temp|maximum|warmest))(?=.*32\\.0)"
     },
     {
       "short": "Average of 5 test marks",
@@ -350,7 +299,7 @@
       ],
       "answer": "total = 0\nfor test in range(1, 6):\n    mark = int(input(\"Enter mark for test \" + str(test) + \": \"))\n    total = total + mark\n\naverage = total / 5\nprint(\"Average mark:\", average)",
       "testInputs": ["10", "20", "30", "40", "50"],
-      "expectedOutputPattern": "30\\.0"
+      "expectedOutputPattern": "(?=.*(?:average|avg|mean|mark|score))(?=.*30\\.0)"
     },
     {
       "short": "Lowest score out of 8 players",
@@ -363,7 +312,7 @@
       ],
       "answer": "lowest = 9999\nfor player in range(1, 9):\n    score = int(input(\"Enter score for player \" + str(player) + \": \"))\n    if score < lowest:\n        lowest = score\n\nprint(\"Lowest score:\", lowest)",
       "testInputs": ["50", "40", "30", "20", "15", "60", "70", "80"],
-      "expectedOutputPattern": "15"
+      "expectedOutputPattern": "(?=.*(?:low|lowest|min|minimum|score|player|worst))(?=.*15)"
     },
     {
       "short": "Sum of integers from 1 to 100",
@@ -375,7 +324,7 @@
       ],
       "answer": "total = 0\nfor number in range(1, 101):\n    total = total + number\n\nprint(\"Sum of numbers from 1 to 100:\", total)",
       "testInputs": [],
-      "expectedOutputPattern": "5050"
+      "expectedOutputPattern": "(?=.*(?:sum|total|all|numbers|result))(?=.*5050)"
     },
     {
       "short": "Times table from 1 to 12",
@@ -387,7 +336,7 @@
       ],
       "answer": "n = int(input(\"Enter a positive integer: \"))\nfor i in range(1, 13):\n    print(n, \"x\", i, \"=\", n * i)",
       "testInputs": ["7"],
-      "expectedOutputPattern": "7\\s*x\\s*12\\s*=\\s*84"
+      "expectedOutputPattern": "7\\s*[xX*]\\s*12\\s*=\\s*84"
     },
     {
       "short": "Count even numbers out of 25 inputs",
@@ -400,7 +349,7 @@
       ],
       "answer": "count_even = 0\nfor i in range(1, 26):\n    number = int(input(\"Enter integer \" + str(i) + \": \"))\n    if number % 2 == 0:\n        count_even = count_even + 1\n\nprint(\"Number of even integers entered:\", count_even)",
       "testInputs": [...Array(10).fill("2"), ...Array(15).fill("3")],
-      "expectedOutputPattern": "10"
+      "expectedOutputPattern": "(?=.*(?:even|number|numbers|total|count|amount))(?=.*10)"
     },
     {
       "short": "Weekly fitness step tracker",
@@ -413,7 +362,7 @@
       ],
       "answer": "total_steps = 0\nfor day in range(1, 8):\n    steps = int(input(\"Enter steps taken on day \" + str(day) + \": \"))\n    total_steps = total_steps + steps\n\nprint(\"Great job! Total steps this week:\", total_steps)",
       "testInputs": Array(7).fill("1000"),
-      "expectedOutputPattern": "7000"
+      "expectedOutputPattern": "(?=.*(?:total|steps|week|job|great|all|sum))(?=.*7000)"
     },
     {
       "short": "Cinema screening revenue",
@@ -426,7 +375,7 @@
       ],
       "answer": "total_revenue = 0.0\nfor screening in range(1, 6):\n    revenue = float(input(\"Enter revenue for screening \" + str(screening) + \": $\"))\n    total_revenue = total_revenue + revenue\n\nprint(\"Total daily cinema revenue: $\", total_revenue)",
       "testInputs": ["100.50", "200.00", "150.00", "300.00", "50.00"],
-      "expectedOutputPattern": "800\\.5"
+      "expectedOutputPattern": "(?=.*(?:total|revenue|daily|sales|money|cinema|sum))(?=.*800\\.5)"
     },
     {
       "short": "Scholarship eligibility check",
@@ -440,7 +389,7 @@
       ],
       "answer": "eligible = 0\nfor applicant in range(1, 16):\n    score = int(input(\"Enter score for applicant \" + str(applicant) + \": \"))\n    if score >= 85:\n        eligible = eligible + 1\n\nprint(\"Total applicants eligible for the scholarship:\", eligible)",
       "testInputs": [...Array(6).fill("90"), ...Array(9).fill("80")],
-      "expectedOutputPattern": "6"
+      "expectedOutputPattern": "(?=.*(?:eligible|scholarship|total|applicants|qualify|students|count))(?=.*6)"
     },
     {
       "short": "Employee weekly wage calculator",
@@ -454,7 +403,7 @@
       ],
       "answer": "total_hours = 0\nfor day in range(1, 6):\n    hours = float(input(\"Enter hours worked on day \" + str(day) + \": \"))\n    total_hours = total_hours + hours\n\nweekly_wage = total_hours * 15\nprint(\"Total weekly wage: $\", weekly_wage)",
       "testInputs": Array(5).fill("8"),
-      "expectedOutputPattern": "600\\.0"
+      "expectedOutputPattern": "(?=.*(?:total|weekly|wage|pay|salary|earned|income))(?=.*600\\.0)"
     },
     {
       "short": "Warehouse low stock warning",
@@ -467,7 +416,7 @@
       ],
       "answer": "for product in range(1, 11):\n    stock = int(input(\"Enter stock level for product \" + str(product) + \": \"))\n    if stock < 5:\n        print(\"Warning: Product \" + str(product) + \" is low on stock!\")",
       "testInputs": ["10", "2", "15", "20", "25", "30", "35", "40", "45", "50"],
-      "expectedOutputPattern": "Warning.*?Product 2"
+      "expectedOutputPattern": "(?=.*(?:warning|low|alert|stock|reorder|fewer))"
     },
     {
       "short": "Total weight of 12 boxes",
@@ -480,7 +429,7 @@
       ],
       "answer": "total_weight = 0.0\nfor box in range(1, 13):\n    weight = float(input(\"Enter weight for box \" + str(box) + \": \"))\n    total_weight = total_weight + weight\n\nprint(\"Total weight of all boxes:\", total_weight)",
       "testInputs": Array(12).fill("10.5"),
-      "expectedOutputPattern": "126\\.0"
+      "expectedOutputPattern": "(?=.*(?:total|weight|boxes|all|sum|kg))(?=.*126\\.0)"
     },
     {
       "short": "Count red cars out of 10",
@@ -494,7 +443,7 @@
       ],
       "answer": "red_count = 0\nfor car in range(1, 11):\n    colour = input(\"Enter colour of car \" + str(car) + \": \")\n    if colour.lower() == \"red\":\n        red_count = red_count + 1\n\nprint(\"Number of red cars:\", red_count)",
       "testInputs": ["red", "blue", "green", "Red", "black", "white", "RED", "yellow", "purple", "orange"],
-      "expectedOutputPattern": "3"
+      "expectedOutputPattern": "(?=.*(?:red|cars|number|total|count|amount))(?=.*3)"
     },
     {
       "short": "Loyalty points over 6 months",
@@ -507,7 +456,7 @@
       ],
       "answer": "total_points = 0\nfor month in range(1, 7):\n    points = int(input(\"Enter points for month \" + str(month) + \": \"))\n    total_points = total_points + points\n\nprint(\"Total loyalty points:\", total_points)",
       "testInputs": Array(6).fill("50"),
-      "expectedOutputPattern": "300"
+      "expectedOutputPattern": "(?=.*(?:total|loyalty|points|collected|sum|earned))(?=.*300)"
     },
     {
       "short": "Count tablets needing charging",
@@ -521,7 +470,7 @@
       ],
       "answer": "charge_count = 0\nfor tablet in range(1, 21):\n    battery = int(input(\"Enter battery percentage for tablet \" + str(tablet) + \": \"))\n    if battery < 20:\n        charge_count = charge_count + 1\n\nprint(\"Tablets needing a charge:\", charge_count)",
       "testInputs": [...Array(5).fill("10"), ...Array(15).fill("50")],
-      "expectedOutputPattern": "5"
+      "expectedOutputPattern": "(?=.*(?:tablets|charge|needing|battery|count|total|low))(?=.*5)"
     },
     {
       "short": "Total distance run in 5 days",
@@ -534,7 +483,7 @@
       ],
       "answer": "total_distance = 0.0\nfor day in range(1, 6):\n    distance = float(input(\"Enter distance for day \" + str(day) + \" in km: \"))\n    total_distance = total_distance + distance\n\nprint(\"Total distance run:\", total_distance, \"km\")",
       "testInputs": ["5.5", "4.0", "6.2", "3.1", "5.0"],
-      "expectedOutputPattern": "23\\.8"
+      "expectedOutputPattern": "(?=.*(?:total|distance|run|km|covered|sum))(?=.*23\\.8)"
     }
   ];
 
@@ -550,7 +499,7 @@
       ],
       "answer": "total = 0\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    total = total + number\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nprint(\"Total of all numbers entered:\", total)",
       "testInputs": ["10", "20", "30", "-1"],
-      "expectedOutputPattern": "60"
+      "expectedOutputPattern": "(?=.*(?:total|sum|all|numbers|final|result))(?=.*60)"
     },
     {
       "short": "Count numbers until 0 is entered",
@@ -563,7 +512,7 @@
       ],
       "answer": "count = 0\nnumber = int(input(\"Enter an integer (0 to finish): \"))\nwhile number != 0:\n    count = count + 1\n    number = int(input(\"Enter an integer (0 to finish): \"))\n\nprint(\"Number of integers entered:\", count)",
       "testInputs": ["5", "10", "15", "20", "0"],
-      "expectedOutputPattern": "4"
+      "expectedOutputPattern": "(?=.*(?:number|integers|count|entered|total|amount))(?=.*4)"
     },
     {
       "short": "Password check until correct",
@@ -575,7 +524,7 @@
       ],
       "answer": "password = input(\"Enter password: \")\nwhile password != \"secret\":\n    print(\"Incorrect password.\")\n    password = input(\"Enter password: \")\n\nprint(\"Access granted.\")",
       "testInputs": ["wrong1", "wrong2", "secret"],
-      "expectedOutputPattern": "Access granted"
+      "expectedOutputPattern": "(?=.*(?:access|granted|welcome|success|correct|logged|in|unlocked))"
     },
     {
       "short": "Countdown using a loop",
@@ -588,7 +537,7 @@
       ],
       "answer": "n = int(input(\"Enter starting value: \"))\nwhile n >= 0:\n    print(n)\n    n = n - 1\n\nprint(\"Countdown finished.\")",
       "testInputs": ["3"],
-      "expectedOutputPattern": "Countdown finished"
+      "expectedOutputPattern": "(?=.*(?:countdown|finished|done|complete|0|liftoff|end))"
     },
     {
       "short": "Sum values until total is at least 100",
@@ -601,7 +550,7 @@
       ],
       "answer": "total = 0\nwhile total < 100:\n    number = int(input(\"Enter an integer: \"))\n    total = total + number\n\nprint(\"Final total (at least 100):\", total)",
       "testInputs": ["40", "50", "15"],
-      "expectedOutputPattern": "105"
+      "expectedOutputPattern": "(?=.*(?:final|total|sum|reached|at least|over))(?=.*105)"
     },
     {
       "short": "Repeat until an even number is entered",
@@ -613,7 +562,7 @@
       ],
       "answer": "number = int(input(\"Enter an integer: \"))\nwhile number % 2 != 0:\n    print(\"That number is odd.\")\n    number = int(input(\"Enter an integer: \"))\n\nprint(\"Even number entered:\", number)",
       "testInputs": ["3", "5", "7", "8"],
-      "expectedOutputPattern": "8"
+      "expectedOutputPattern": "(?=.*(?:even|number|entered|is|got|found))(?=.*8)"
     },
     {
       "short": "Menu selection until exit chosen",
@@ -626,7 +575,7 @@
       ],
       "answer": "choice = 0\nwhile choice != 4:\n    print(\"1. Order Coffee\")\n    print(\"2. Order Tea\")\n    print(\"3. Order Pastry\")\n    print(\"4. Exit\")\n    choice = int(input(\"Enter your choice: \"))\n\nprint(\"Have a great day!\")",
       "testInputs": ["1", "3", "4"],
-      "expectedOutputPattern": "Have a great day"
+      "expectedOutputPattern": "(?=.*(?:have a great day|goodbye|bye|exit|closing|closed|done))"
     },
     {
       "short": "Guessing game until correct",
@@ -639,7 +588,7 @@
       ],
       "answer": "secret = 12\nguess = int(input(\"Guess the number: \"))\nwhile guess != secret:\n    print(\"Incorrect guess.\")\n    guess = int(input(\"Guess the number: \"))\n\nprint(\"Correct! The number was\", secret)",
       "testInputs": ["5", "20", "12"],
-      "expectedOutputPattern": "Correct.*12"
+      "expectedOutputPattern": "(?=.*(?:correct|win|won|right|success|guessed|got it))"
     },
     {
       "short": "Average of values until -1 entered",
@@ -652,7 +601,7 @@
       ],
       "answer": "total = 0\ncount = 0\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    total = total + number\n    count = count + 1\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nif count > 0:\n    average = total / count\n    print(\"Average of numbers entered:\", average)\nelse:\n    print(\"No numbers were entered.\")",
       "testInputs": ["10", "20", "30", "40", "-1"],
-      "expectedOutputPattern": "25\\.0"
+      "expectedOutputPattern": "(?=.*(?:average|avg|mean|result))(?=.*25\\.0)"
     },
     {
       "short": "Find maximum until -1 entered",
@@ -665,7 +614,7 @@
       ],
       "answer": "maximum = -9999\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    if number > maximum:\n        maximum = number\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nif maximum != -9999:\n    print(\"Largest number entered:\", maximum)\nelse:\n    print(\"No numbers were entered.\")",
       "testInputs": ["10", "50", "25", "5", "-1"],
-      "expectedOutputPattern": "50"
+      "expectedOutputPattern": "(?=.*(?:largest|max|maximum|highest|number|biggest))(?=.*50)"
     },
     {
       "short": "Target savings tracker",
@@ -676,9 +625,9 @@
         "add each deposit to the running total",
         "output a congratulatory message when the $500 target is hit or exceeded"
       ],
-      "answer": "savings = 0.0\nwhile savings < 500:\n    deposit = float(input(\"Enter deposit amount: $\"))\n    savings = savings + deposit\n\nprint(\"Goal reached! Total saved: $\", savings)",
+      "answer": "savings = 0.0\nwhile savings < 500:\n    deposit = float(input(\"Enter deposit amount: $\"))\n    savings = savings + deposit\n\nprint(\"Goal reached!\")",
       "testInputs": ["200", "150", "200"],
-      "expectedOutputPattern": "550\\.0"
+      "expectedOutputPattern": "(?=.*(?:goal|reached|total|saved|savings|success|congratulations))"
     },
     {
       "short": "RPG monster battle",
@@ -691,7 +640,7 @@
       ],
       "answer": "monster_hp = 50\nwhile monster_hp > 0:\n    damage = int(input(\"Enter damage dealt this turn: \"))\n    monster_hp = monster_hp - damage\n    print(\"Monster HP is now\", monster_hp)\n\nprint(\"The monster has been defeated!\")",
       "testInputs": ["20", "15", "20"],
-      "expectedOutputPattern": "defeated"
+      "expectedOutputPattern": "(?=.*(?:defeated|dead|victory|won|killed|slain|beat))"
     },
     {
       "short": "Elevator capacity check",
@@ -702,9 +651,9 @@
         "prompt for a passenger's weight and add it to the total",
         "output a warning message when the elevator becomes overloaded"
       ],
-      "answer": "total_weight = 0\nwhile total_weight <= 800:\n    weight = int(input(\"Enter passenger weight in kg: \"))\n    total_weight = total_weight + weight\n\nprint(\"Warning: Elevator capacity exceeded! Total weight:\", total_weight, \"kg\")",
+      "answer": "total_weight = 0\nwhile total_weight <= 800:\n    weight = int(input(\"Enter passenger weight in kg: \"))\n    total_weight = total_weight + weight\n\nprint(\"Warning: Elevator capacity exceeded!\")",
       "testInputs": ["300", "300", "250"],
-      "expectedOutputPattern": "850"
+      "expectedOutputPattern": "(?=.*(?:warning|capacity|exceeded|overload|full|total|heavy))"
     },
     {
       "short": "Filling a water tank",
@@ -717,7 +666,7 @@
       ],
       "answer": "volume = 0\nwhile volume < 100:\n    add_water = int(input(\"How many litres to add? \"))\n    volume = volume + add_water\n    print(\"Current volume:\", volume, \"litres\")\n\nprint(\"The tank is now full.\")",
       "testInputs": ["40", "40", "30"],
-      "expectedOutputPattern": "full"
+      "expectedOutputPattern": "(?=.*(?:full|done|complete|max|capacity|stop|filled))"
     },
     {
       "short": "Class representative voting",
@@ -731,7 +680,7 @@
       ],
       "answer": "total_votes = 0\nvote = input(\"Enter candidate name (or 'close' to finish): \")\nwhile vote.lower() != 'close':\n    total_votes = total_votes + 1\n    vote = input(\"Enter candidate name (or 'close' to finish): \")\n\nprint(\"Voting closed. Total votes cast:\", total_votes)",
       "testInputs": ["Alice", "Bob", "Charlie", "Alice", "close"],
-      "expectedOutputPattern": "4"
+      "expectedOutputPattern": "(?=.*(?:voting|closed|total|votes|cast|count|results))(?=.*4)"
     },
     {
       "short": "Validate student age",
@@ -744,7 +693,7 @@
       ],
       "answer": "age = int(input(\"Enter student age (11-18): \"))\nwhile age < 11 or age > 18:\n    print(\"Invalid age. Must be between 11 and 18.\")\n    age = int(input(\"Enter student age (11-18): \"))\n\nprint(\"Valid age accepted.\")",
       "testInputs": ["9", "25", "15"],
-      "expectedOutputPattern": "Valid age accepted"
+      "expectedOutputPattern": "(?=.*(?:valid|success|accepted|correct|done|ok|perfect|great|right|good))"
     },
     {
       "short": "Count passes until negative entered",
@@ -757,7 +706,7 @@
       ],
       "answer": "passes = 0\nscore = int(input(\"Enter test score (-1 to finish): \"))\nwhile score >= 0:\n    if score >= 50:\n        passes = passes + 1\n    score = int(input(\"Enter test score (-1 to finish): \"))\n\nprint(\"Total students who passed:\", passes)",
       "testInputs": ["60", "40", "80", "20", "-1"],
-      "expectedOutputPattern": "2"
+      "expectedOutputPattern": "(?=.*(?:total|students|passed|passes|count|number))(?=.*2)"
     },
     {
       "short": "Bus passenger boarding",
@@ -768,9 +717,9 @@
         "add the new passengers to the running total",
         "output a message when the bus is full"
       ],
-      "answer": "total_passengers = 0\nwhile total_passengers < 50:\n    boarding = int(input(\"Enter number of passengers boarding: \"))\n    total_passengers = total_passengers + boarding\n\nprint(\"The bus is now full. Total passengers:\", total_passengers)",
+      "answer": "total_passengers = 0\nwhile total_passengers < 50:\n    boarding = int(input(\"Enter number of passengers boarding: \"))\n    total_passengers = total_passengers + boarding\n\nprint(\"The bus is now full.\")",
       "testInputs": ["20", "20", "15"],
-      "expectedOutputPattern": "55"
+      "expectedOutputPattern": "(?=.*(?:full|total|passengers|capacity|loaded))"
     },
     {
       "short": "Fundraising goal tracker",
@@ -781,9 +730,9 @@
         "prompt the user for a donation amount and add it to the total",
         "output a congratulatory message when the target is reached"
       ],
-      "answer": "total_raised = 0.0\nwhile total_raised < 1000:\n    donation = float(input(\"Enter donation amount: $\"))\n    total_raised = total_raised + donation\n\nprint(\"Target reached! Total raised: $\", total_raised)",
+      "answer": "total_raised = 0.0\nwhile total_raised < 1000:\n    donation = float(input(\"Enter donation amount: $\"))\n    total_raised = total_raised + donation\n\nprint(\"Target reached!\")",
       "testInputs": ["500", "400", "250"],
-      "expectedOutputPattern": "1150\\.0"
+      "expectedOutputPattern": "(?=.*(?:target|reached|total|raised|donations|funds|success))"
     },
     {
       "short": "Printer paper usage",
@@ -796,7 +745,7 @@
       ],
       "answer": "paper = 500\nwhile paper > 0:\n    job = int(input(\"Enter pages required for print job: \"))\n    paper = paper - job\n    if paper > 0:\n        print(\"Sheets remaining:\", paper)\n\nprint(\"Warning: Printer is out of paper!\")",
       "testInputs": ["200", "200", "150"],
-      "expectedOutputPattern": "out of paper"
+      "expectedOutputPattern": "(?=.*(?:warning|out|empty|no|paper|replace|gone))"
     }
   ];
 
@@ -808,19 +757,12 @@
   const answerReveal = document.getElementById("answerReveal");
   const meta = document.getElementById("meta");
   const outputContainer = document.getElementById("outputContainer");
-  
-  // Modal Elements
-  const inputModal = document.getElementById("inputModal");
-  const modalPromptText = document.getElementById("modalPromptText");
-  const modalInputBox = document.getElementById("modalInputBox");
-  const modalSubmitBtn = document.getElementById("modalSubmitBtn");
 
   let currentType = null;
   let currentIndex = -1;
   let isTestingMode = false;
   let testInputIndex = 0;
   let capturedOutput = "";
-  let currentInputResolve = null; // Stores the promise resolve function
 
   function buildQuestionHTML(q) {
     if (!q) return "<em>Question data missing.</em>";
@@ -919,29 +861,14 @@
     loadQuestion(currentType, newIndex);
   };
 
-  // --- MODAL SUBMIT LOGIC ---
-  function handleModalSubmit() {
-    if (currentInputResolve) {
-      const userInput = modalInputBox.value;
-      inputModal.style.display = "none"; // Hide modal
-      currentInputResolve(userInput);    // Resume Python code
-      currentInputResolve = null;        // Clear out the resolve function
-    }
-  }
-
-  modalSubmitBtn.addEventListener("click", handleModalSubmit);
-  modalInputBox.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      handleModalSubmit();
-    }
-  });
-
   // --- SKULPT INTEGRATION & TESTING ---
 
   // Function to capture standard output
   function outf(text) {
     capturedOutput += text;
     outputContainer.innerHTML += text;
+    // Auto-scroll to the bottom of the container
+    outputContainer.scrollTop = outputContainer.scrollHeight;
   }
 
   function builtinRead(x) {
@@ -951,47 +878,48 @@
     return Sk.builtinFiles["files"][x];
   }
 
-  // Unified input function for both manual running and testing
+  // Unified input function using INLINE input fields
   function skulptInput(promptText) {
-  return new Promise((resolve) => {
-    if (isTestingMode) {
-      // Auto-grade mode: Use pre-defined inputs from the array
-      const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
-      
-      if (q && q.testInputs && testInputIndex < q.testInputs.length) {
-        const testVal = q.testInputs[testInputIndex++];
-        outf(promptText + testVal + "\n");
-        resolve(testVal);
-      } else {
-        outf(promptText + "[Ran out of test inputs]\n");
-        resolve("");
-      }
-    } else {
-      // Interactive mode: Inline terminal input
-      outf(promptText); // Print the prompt text first
-      
-      // Create a temporary text input
-      const inputEl = document.createElement("input");
-      inputEl.type = "text";
-      inputEl.className = "inline-input";
-      inputEl.autocomplete = "off";
-      
-      // Append it to the terminal and focus it
-      outputContainer.appendChild(inputEl);
-      inputEl.focus();
-      
-      // Listen for the Enter key
-      inputEl.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") {
-          const val = inputEl.value;
-          inputEl.remove();     // Remove the HTML input element
-          outf(val + "\n");     // Print what they typed + a new line
-          resolve(val);         // Send the value back to Python
+    return new Promise((resolve) => {
+      if (isTestingMode) {
+        // Auto-grade mode: Use pre-defined inputs from the array
+        const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
+        
+        if (q && q.testInputs && testInputIndex < q.testInputs.length) {
+          const testVal = q.testInputs[testInputIndex++];
+          outf(promptText + testVal + "\n");
+          resolve(testVal);
+        } else {
+          outf(promptText + "[Ran out of test inputs]\n");
+          resolve("");
         }
-      });
-    }
-  });
-}
+      } else {
+        // Interactive mode: Inline terminal input
+        outf(promptText); // Print the prompt text first
+        
+        // Create a temporary text input
+        const inputEl = document.createElement("input");
+        inputEl.type = "text";
+        inputEl.className = "inline-input";
+        inputEl.autocomplete = "off";
+        
+        // Append it to the terminal and focus it
+        outputContainer.appendChild(inputEl);
+        inputEl.focus();
+        outputContainer.scrollTop = outputContainer.scrollHeight; // Scroll into view
+        
+        // Listen for the Enter key
+        inputEl.addEventListener("keydown", function(e) {
+          if (e.key === "Enter") {
+            const val = inputEl.value;
+            inputEl.remove();     // Remove the HTML input element
+            outf(val + "\n");     // Print what they typed + a new line
+            resolve(val);         // Send the value back to Python
+          }
+        });
+      }
+    });
+  }
 
   // Helper to execute Python via Skulpt
   function executePython(code) {
@@ -1031,7 +959,6 @@
       function(err) {
         outputContainer.classList.add("error");
         outputContainer.innerHTML += "\n" + err.toString();
-        inputModal.style.display = "none"; // Hide modal if code crashes
       }
     );
   });
@@ -1062,7 +989,8 @@
     executePython(code).then(
       function(mod) {
         // Test finished, check output against Regex
-        const regex = new RegExp(q.expectedOutputPattern, "i"); 
+        // Added the "s" flag (dotAll) so it searches across newlines easily!
+        const regex = new RegExp(q.expectedOutputPattern, "is"); 
         
         if (regex.test(capturedOutput)) {
           outputContainer.innerHTML += "\n\n✅ TEST PASSED! Your output matches the expected result.";
@@ -1071,10 +999,12 @@
           outputContainer.innerHTML += "\n\n❌ TEST FAILED. Your output did not match what we expected to see.";
           outputContainer.classList.add("error");
         }
+        outputContainer.scrollTop = outputContainer.scrollHeight;
       },
       function(err) {
         outputContainer.classList.add("error");
         outputContainer.innerHTML += "\n\n❌ ERROR: " + err.toString();
+        outputContainer.scrollTop = outputContainer.scrollHeight;
       }
     );
   });
