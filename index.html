@@ -20,6 +20,17 @@
       display: flex;
       height: 100vh;
     }
+
+    .inline-input {
+        background: transparent;
+        border: none;
+        color: #ddd; /* Matches the terminal text color */
+        font-family: "Consolas", monospace;
+        font-size: 1rem;
+        outline: none;
+        width: 50%;
+        }
+
     aside {
       width: 32%;
       max-width: 360px;
@@ -120,6 +131,10 @@
       font-size: 0.9rem;
       background: #192a56;
       color: white;
+      transition: opacity 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
     }
     button.secondary {
       background: #e0e0e0;
@@ -162,9 +177,60 @@
       color: #2ecc71;
       border: 2px solid #2ecc71;
     }
+
+    /* --- Custom Modal Styles --- */
+    #inputModal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-content label {
+      font-weight: bold;
+      color: #333;
+      font-size: 1.05rem;
+    }
+    .modal-content input {
+      padding: 12px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+    .modal-content input:focus {
+      border-color: #192a56;
+    }
+    .modal-content button {
+      align-self: flex-end;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
+
+<div id="inputModal" style="display: none;">
+  <div class="modal-content">
+    <label id="modalPromptText">Input required:</label>
+    <input type="text" id="modalInputBox" autocomplete="off" />
+    <button id="modalSubmitBtn">Submit</button>
+  </div>
+</div>
+
 <div class="app">
   <aside>
     <h2>Loop Algorithm Practice</h2>
@@ -742,12 +808,19 @@
   const answerReveal = document.getElementById("answerReveal");
   const meta = document.getElementById("meta");
   const outputContainer = document.getElementById("outputContainer");
+  
+  // Modal Elements
+  const inputModal = document.getElementById("inputModal");
+  const modalPromptText = document.getElementById("modalPromptText");
+  const modalInputBox = document.getElementById("modalInputBox");
+  const modalSubmitBtn = document.getElementById("modalSubmitBtn");
 
   let currentType = null;
   let currentIndex = -1;
   let isTestingMode = false;
   let testInputIndex = 0;
   let capturedOutput = "";
+  let currentInputResolve = null; // Stores the promise resolve function
 
   function buildQuestionHTML(q) {
     if (!q) return "<em>Question data missing.</em>";
@@ -846,6 +919,23 @@
     loadQuestion(currentType, newIndex);
   };
 
+  // --- MODAL SUBMIT LOGIC ---
+  function handleModalSubmit() {
+    if (currentInputResolve) {
+      const userInput = modalInputBox.value;
+      inputModal.style.display = "none"; // Hide modal
+      currentInputResolve(userInput);    // Resume Python code
+      currentInputResolve = null;        // Clear out the resolve function
+    }
+  }
+
+  modalSubmitBtn.addEventListener("click", handleModalSubmit);
+  modalInputBox.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      handleModalSubmit();
+    }
+  });
+
   // --- SKULPT INTEGRATION & TESTING ---
 
   // Function to capture standard output
@@ -863,30 +953,45 @@
 
   // Unified input function for both manual running and testing
   function skulptInput(promptText) {
-    return new Promise((resolve, reject) => {
-      if (isTestingMode) {
-        // Find current question to pull test inputs
-        const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
-        
-        if (q && q.testInputs && testInputIndex < q.testInputs.length) {
-          const testVal = q.testInputs[testInputIndex++];
-          // Echo the prompt and auto-fill the test value
-          outf(promptText + testVal + "\n");
-          resolve(testVal);
-        } else {
-          outf(promptText + "[Ran out of test inputs]\n");
-          resolve("");
-        }
+  return new Promise((resolve) => {
+    if (isTestingMode) {
+      // Auto-grade mode: Use pre-defined inputs from the array
+      const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
+      
+      if (q && q.testInputs && testInputIndex < q.testInputs.length) {
+        const testVal = q.testInputs[testInputIndex++];
+        outf(promptText + testVal + "\n");
+        resolve(testVal);
       } else {
-        // Interactive mode using window prompt
-        let userInput = window.prompt(promptText);
-        let safeInput = userInput !== null ? userInput : "";
-        // Echo the prompt and user's answer into the console
-        outf(promptText + safeInput + "\n");
-        resolve(safeInput);
+        outf(promptText + "[Ran out of test inputs]\n");
+        resolve("");
       }
-    });
-  }
+    } else {
+      // Interactive mode: Inline terminal input
+      outf(promptText); // Print the prompt text first
+      
+      // Create a temporary text input
+      const inputEl = document.createElement("input");
+      inputEl.type = "text";
+      inputEl.className = "inline-input";
+      inputEl.autocomplete = "off";
+      
+      // Append it to the terminal and focus it
+      outputContainer.appendChild(inputEl);
+      inputEl.focus();
+      
+      // Listen for the Enter key
+      inputEl.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+          const val = inputEl.value;
+          inputEl.remove();     // Remove the HTML input element
+          outf(val + "\n");     // Print what they typed + a new line
+          resolve(val);         // Send the value back to Python
+        }
+      });
+    }
+  });
+}
 
   // Helper to execute Python via Skulpt
   function executePython(code) {
@@ -926,6 +1031,7 @@
       function(err) {
         outputContainer.classList.add("error");
         outputContainer.innerHTML += "\n" + err.toString();
+        inputModal.style.display = "none"; // Hide modal if code crashes
       }
     );
   });
@@ -956,7 +1062,7 @@
     executePython(code).then(
       function(mod) {
         // Test finished, check output against Regex
-        const regex = new RegExp(q.expectedOutputPattern, "i"); // "i" makes it case-insensitive
+        const regex = new RegExp(q.expectedOutputPattern, "i"); 
         
         if (regex.test(capturedOutput)) {
           outputContainer.innerHTML += "\n\n✅ TEST PASSED! Your output matches the expected result.";
