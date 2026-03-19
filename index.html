@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>For & While Loop Practice – Exam Style</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #f4f4f8;
+    }
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+    aside {
+      width: 32%;
+      max-width: 360px;
+      min-width: 260px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+    }
+    aside h2 {
+      margin: 0;
+      padding: 16px 20px;
+      background: #192a56;
+      color: white;
+      font-size: 1rem;
+    }
+    .accordion-section {
+      border-bottom: 1px solid #ddd;
+    }
+    .accordion-header {
+      padding: 12px 16px;
+      background: #f0f0f5;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+    }
+    .accordion-header:hover {
+      background: #e6e6ee;
+    }
+    .accordion-content {
+      display: none;
+      padding: 0;
+    }
+    .question-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .question-list li {
+      padding: 10px 16px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .question-list li:hover {
+      background: #f0f4ff;
+    }
+    .question-list li.active {
+      background: #dfe8ff;
+      font-weight: 600;
+    }
+    main {
+      flex: 1;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    #meta {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    #questionText {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px 18px;
+      border: 1px solid #ddd;
+      max-height: 40vh;
+      overflow-y: auto;
+      font-size: 0.95rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-family: "Consolas", monospace;
+      font-size: 1rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    button {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: #192a56;
+      color: white;
+    }
+    button.secondary {
+      background: #e0e0e0;
+      color: #222;
+    }
+    button.run-btn {
+      background: #2ecc71;
+      color: #111;
+      font-weight: bold;
+    }
+    button.test-btn {
+      background: #9b59b6;
+      color: white;
+      font-weight: bold;
+    }
+    #answerReveal {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+      display: none;
+    }
+    #outputContainer {
+      background: #1e1e1e;
+      color: #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: "Consolas", monospace;
+      min-height: 120px;
+      white-space: pre-wrap;
+      display: none;
+      line-height: 1.4;
+    }
+    #outputContainer.error {
+      color: #ff6b6b;
+    }
+    #outputContainer.success {
+      color: #2ecc71;
+      border: 2px solid #2ecc71;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h2>Loop Algorithm Practice</h2>
+    <div class="accordion-section">
+      <div class="accordion-header">For Loop Questions (20)</div>
+      <div class="accordion-content">
+        <ul class="question-list" id="forLoopList"></ul>
+      </div>
+    </div>
+    <div class="accordion-section">
+      <div class="accordion-header">While Loop Questions (20)</div>
+      <div class="accordion-content">
+        <ul class="question-list" id="whileLoopList"></ul>
+      </div>
+    </div>
+  </aside>
+  <main>
+    <div>
+      <h1>Interactive Algorithm Activity</h1>
+      <div id="meta">Select a question from the left.</div>
+    </div>
+    <div id="questionText">
+      <em>Please choose a question to begin.</em>
+    </div>
+    <label><strong>Your Python Code:</strong></label>
+    <textarea id="answerBox" placeholder="Write your Python code here..."></textarea>
+    <div class="controls">
+      <button id="prevQuestion">Previous</button>
+      <button id="nextQuestion">Next</button>
+      <button id="clearAnswer" class="secondary">Clear</button>
+      <button id="checkAnswer" class="secondary">Show Answer</button>
+      <button id="runCode" class="run-btn">▶ Run (Interactive)</button>
+      <button id="runTest" class="test-btn">✔ Auto-Grade (Run Tests)</button>
+    </div>
+    
+    <div id="outputContainer"></div>
+    <div id="answerReveal"></div>
+  </main>
+</div>
+
+<script>
+  // --- QUESTION DATA ---
+  const forQuestions = [
+    {
+      "short": "Total items sold in a week",
+      "body": "calculate the total number of items sold in a week.",
+      "steps": [
+        "prompt the user to enter the number of items sold each day",
+        "repeat this input process for 7 days",
+        "calculate the total number of items sold",
+        "output the total in an appropriate message"
+      ],
+      "answer": "total = 0\nfor day in range(1, 8):\n    sold = int(input(\"Enter items sold for day \" + str(day) + \": \"))\n    total = total + sold\n\nprint(\"Total items sold in the week:\", total)",
+      "testInputs": ["10", "20", "15", "5", "10", "20", "20"],
+      "expectedOutputPattern": "100" 
+    },
+    {
+      "short": "Total rainfall in a month",
+      "body": "calculate the total rainfall recorded in a 30-day month.",
+      "steps": [
+        "prompt the user to enter the rainfall for each day in millimetres",
+        "repeat this input process for 30 days",
+        "calculate the total rainfall for the month",
+        "output the total rainfall in an appropriate message"
+      ],
+      "answer": "total_rainfall = 0.0\nfor day in range(1, 31):\n    rainfall = float(input(\"Enter rainfall for day \" + str(day) + \" in mm: \"))\n    total_rainfall = total_rainfall + rainfall\n\nprint(\"Total rainfall in the month:\", total_rainfall, \"mm\")",
+      "testInputs": Array(30).fill("2"), 
+      "expectedOutputPattern": "60\\.0" 
+    },
+    {
+      "short": "Count passes out of 20 students",
+      "body": "count how many students pass an exam out of 20 students.",
+      "steps": [
+        "prompt the user to enter each student's result as pass or fail",
+        "repeat this input process for 20 students",
+        "count how many students receive a result of pass",
+        "output the number of passes in an appropriate message"
+      ],
+      "answer": "passes = 0\nfor student in range(1, 21):\n    result = input(\"Enter result for student \" + str(student) + \" (pass/fail): \")\n    if result.lower() == \"pass\":\n        passes = passes + 1\n\nprint(\"Number of students who passed:\", passes)",
+      "testInputs": [...Array(12).fill("pass"), ...Array(8).fill("fail")],
+      "expectedOutputPattern": "12"
+    },
+    {
+      "short": "Total cost of 10 items",
+      "body": "calculate the total cost of 10 items purchased.",
+      "steps": [
+        "prompt the user to enter the price of each item",
+        "repeat this input process for 10 items",
+        "calculate the total cost of all the items",
+        "output the total cost in an appropriate message"
+      ],
+      "answer": "total_cost = 0.0\nfor item in range(1, 11):\n    price = float(input(\"Enter price of item \" + str(item) + \": \"))\n    total_cost = total_cost + price\n\nprint(\"Total cost of all items:\", total_cost)",
+      "testInputs": Array(10).fill("5.5"),
+      "expectedOutputPattern": "55\\.0"
+    },
+    {
+      "short": "Highest temperature in a week",
+      "body": "determine the highest temperature recorded in a week.",
+      "steps": [
+        "prompt the user to enter the temperature for each day",
+        "repeat this input process for 7 days",
+        "determine which temperature is the highest",
+        "output the highest temperature in an appropriate message"
+      ],
+      "answer": "highest = -999.0\nfor day in range(1, 8):\n    temp = float(input(\"Enter temperature for day \" + str(day) + \": \"))\n    if temp > highest:\n        highest = temp\n\nprint(\"Highest temperature in the week:\", highest)",
+      "testInputs": ["10", "25", "15", "32", "20", "5", "12"],
+      "expectedOutputPattern": "32\\.0"
+    },
+    {
+      "short": "Average of 5 test marks",
+      "body": "calculate the average mark for 5 tests.",
+      "steps": [
+        "prompt the user to enter the mark for each test",
+        "repeat this input process for 5 tests",
+        "calculate the average mark",
+        "output the average mark in an appropriate message"
+      ],
+      "answer": "total = 0\nfor test in range(1, 6):\n    mark = int(input(\"Enter mark for test \" + str(test) + \": \"))\n    total = total + mark\n\naverage = total / 5\nprint(\"Average mark:\", average)",
+      "testInputs": ["10", "20", "30", "40", "50"],
+      "expectedOutputPattern": "30\\.0"
+    },
+    {
+      "short": "Lowest score out of 8 players",
+      "body": "determine the lowest score achieved by 8 players in a game.",
+      "steps": [
+        "prompt the user to enter the score for each player",
+        "repeat this input process for 8 players",
+        "determine which score is the lowest",
+        "output the lowest score in an appropriate message"
+      ],
+      "answer": "lowest = 9999\nfor player in range(1, 9):\n    score = int(input(\"Enter score for player \" + str(player) + \": \"))\n    if score < lowest:\n        lowest = score\n\nprint(\"Lowest score:\", lowest)",
+      "testInputs": ["50", "40", "30", "20", "15", "60", "70", "80"],
+      "expectedOutputPattern": "15"
+    },
+    {
+      "short": "Sum of integers from 1 to 100",
+      "body": "calculate the sum of all integers from 1 to 100.",
+      "steps": [
+        "repeatedly go through each integer from 1 to 100",
+        "add each integer to a running total",
+        "output the final total in an appropriate message"
+      ],
+      "answer": "total = 0\nfor number in range(1, 101):\n    total = total + number\n\nprint(\"Sum of numbers from 1 to 100:\", total)",
+      "testInputs": [],
+      "expectedOutputPattern": "5050"
+    },
+    {
+      "short": "Times table from 1 to 12",
+      "body": "output the times table for a given integer.",
+      "steps": [
+        "prompt the user to enter a positive integer",
+        "repeatedly multiply this number by all integers from 1 to 12",
+        "output each line of the times table in a clear format"
+      ],
+      "answer": "n = int(input(\"Enter a positive integer: \"))\nfor i in range(1, 13):\n    print(n, \"x\", i, \"=\", n * i)",
+      "testInputs": ["7"],
+      "expectedOutputPattern": "7\\s*x\\s*12\\s*=\\s*84"
+    },
+    {
+      "short": "Count even numbers out of 25 inputs",
+      "body": "count how many of 25 integers entered by the user are even.",
+      "steps": [
+        "repeatedly prompt the user to enter an integer for 25 inputs",
+        "check each integer to see if it is even",
+        "count how many of the numbers are even",
+        "output the count of even numbers in an appropriate message"
+      ],
+      "answer": "count_even = 0\nfor i in range(1, 26):\n    number = int(input(\"Enter integer \" + str(i) + \": \"))\n    if number % 2 == 0:\n        count_even = count_even + 1\n\nprint(\"Number of even integers entered:\", count_even)",
+      "testInputs": [...Array(10).fill("2"), ...Array(15).fill("3")],
+      "expectedOutputPattern": "10"
+    },
+    {
+      "short": "Weekly fitness step tracker",
+      "body": "track a user's daily fitness steps over a 7-day period to calculate the total steps taken in a week.",
+      "steps": [
+        "prompt the user to enter their step count for each day",
+        "repeat this input process for 7 days",
+        "add the daily steps to a running total",
+        "output the total weekly steps in a motivational message"
+      ],
+      "answer": "total_steps = 0\nfor day in range(1, 8):\n    steps = int(input(\"Enter steps taken on day \" + str(day) + \": \"))\n    total_steps = total_steps + steps\n\nprint(\"Great job! Total steps this week:\", total_steps)",
+      "testInputs": Array(7).fill("1000"),
+      "expectedOutputPattern": "7000"
+    },
+    {
+      "short": "Cinema screening revenue",
+      "body": "calculate the total revenue generated from ticket sales across 5 different movie screenings in a day.",
+      "steps": [
+        "prompt the user to enter the total revenue for each screening",
+        "repeat this process for 5 screenings",
+        "calculate the combined total revenue",
+        "output the final revenue amount"
+      ],
+      "answer": "total_revenue = 0.0\nfor screening in range(1, 6):\n    revenue = float(input(\"Enter revenue for screening \" + str(screening) + \": $\"))\n    total_revenue = total_revenue + revenue\n\nprint(\"Total daily cinema revenue: $\", total_revenue)",
+      "testInputs": ["100.50", "200.00", "150.00", "300.00", "50.00"],
+      "expectedOutputPattern": "800\\.5"
+    },
+    {
+      "short": "Scholarship eligibility check",
+      "body": "review the test scores of 15 applicants and count how many achieved a score of 85 or higher to qualify for a scholarship.",
+      "steps": [
+        "prompt the user to enter the test score for each applicant",
+        "repeat this process for 15 applicants",
+        "check if the score is 85 or higher",
+        "count how many applicants meet the requirement",
+        "output the total number of eligible applicants"
+      ],
+      "answer": "eligible = 0\nfor applicant in range(1, 16):\n    score = int(input(\"Enter score for applicant \" + str(applicant) + \": \"))\n    if score >= 85:\n        eligible = eligible + 1\n\nprint(\"Total applicants eligible for the scholarship:\", eligible)",
+      "testInputs": [...Array(6).fill("90"), ...Array(9).fill("80")],
+      "expectedOutputPattern": "6"
+    },
+    {
+      "short": "Employee weekly wage calculator",
+      "body": "calculate the total weekly pay for an employee by asking for the hours worked each day over a 5-day work week, assuming a fixed hourly rate of $15.",
+      "steps": [
+        "prompt the user to enter the hours worked for each day",
+        "repeat this input process for 5 days",
+        "calculate the total hours worked",
+        "multiply the total hours by the hourly rate of 15",
+        "output the total weekly wage"
+      ],
+      "answer": "total_hours = 0\nfor day in range(1, 6):\n    hours = float(input(\"Enter hours worked on day \" + str(day) + \": \"))\n    total_hours = total_hours + hours\n\nweekly_wage = total_hours * 15\nprint(\"Total weekly wage: $\", weekly_wage)",
+      "testInputs": Array(5).fill("8"),
+      "expectedOutputPattern": "600\\.0"
+    },
+    {
+      "short": "Warehouse low stock warning",
+      "body": "check the stock levels of 10 different products in a warehouse and output a warning message for any product that has fewer than 5 items remaining.",
+      "steps": [
+        "prompt the user to enter the stock level for each product",
+        "repeat this process for 10 products",
+        "check if the stock level is less than 5",
+        "output a low stock warning for that specific product if the condition is met"
+      ],
+      "answer": "for product in range(1, 11):\n    stock = int(input(\"Enter stock level for product \" + str(product) + \": \"))\n    if stock < 5:\n        print(\"Warning: Product \" + str(product) + \" is low on stock!\")",
+      "testInputs": ["10", "2", "15", "20", "25", "30", "35", "40", "45", "50"],
+      "expectedOutputPattern": "Warning.*?Product 2"
+    },
+    {
+      "short": "Total weight of 12 boxes",
+      "body": "calculate the total weight of 12 boxes ready for shipping.",
+      "steps": [
+        "prompt the user to enter the weight of each box",
+        "repeat this input process for 12 boxes",
+        "calculate the total weight",
+        "output the total weight in an appropriate message"
+      ],
+      "answer": "total_weight = 0.0\nfor box in range(1, 13):\n    weight = float(input(\"Enter weight for box \" + str(box) + \": \"))\n    total_weight = total_weight + weight\n\nprint(\"Total weight of all boxes:\", total_weight)",
+      "testInputs": Array(12).fill("10.5"),
+      "expectedOutputPattern": "126\\.0"
+    },
+    {
+      "short": "Count red cars out of 10",
+      "body": "count how many red cars pass by out of 10 recorded cars.",
+      "steps": [
+        "prompt the user to enter the colour of each car",
+        "repeat this input process for 10 cars",
+        "check if the colour entered is red",
+        "count how many cars are red",
+        "output the final count in an appropriate message"
+      ],
+      "answer": "red_count = 0\nfor car in range(1, 11):\n    colour = input(\"Enter colour of car \" + str(car) + \": \")\n    if colour.lower() == \"red\":\n        red_count = red_count + 1\n\nprint(\"Number of red cars:\", red_count)",
+      "testInputs": ["red", "blue", "green", "Red", "black", "white", "RED", "yellow", "purple", "orange"],
+      "expectedOutputPattern": "3"
+    },
+    {
+      "short": "Loyalty points over 6 months",
+      "body": "calculate the total loyalty points collected by a customer over a 6-month period.",
+      "steps": [
+        "prompt the user to enter the points collected each month",
+        "repeat this input process for 6 months",
+        "calculate the total points collected",
+        "output the total points in an appropriate message"
+      ],
+      "answer": "total_points = 0\nfor month in range(1, 7):\n    points = int(input(\"Enter points for month \" + str(month) + \": \"))\n    total_points = total_points + points\n\nprint(\"Total loyalty points:\", total_points)",
+      "testInputs": Array(6).fill("50"),
+      "expectedOutputPattern": "300"
+    },
+    {
+      "short": "Count tablets needing charging",
+      "body": "check the battery percentage of 20 tablets and count how many have a battery level below 20 percent.",
+      "steps": [
+        "prompt the user to enter the battery percentage for each tablet",
+        "repeat this process for 20 tablets",
+        "check if the battery percentage is less than 20",
+        "count how many tablets meet this condition",
+        "output the total number of tablets that need charging"
+      ],
+      "answer": "charge_count = 0\nfor tablet in range(1, 21):\n    battery = int(input(\"Enter battery percentage for tablet \" + str(tablet) + \": \"))\n    if battery < 20:\n        charge_count = charge_count + 1\n\nprint(\"Tablets needing a charge:\", charge_count)",
+      "testInputs": [...Array(5).fill("10"), ...Array(15).fill("50")],
+      "expectedOutputPattern": "5"
+    },
+    {
+      "short": "Total distance run in 5 days",
+      "body": "calculate the total distance a runner has covered over 5 days of training.",
+      "steps": [
+        "prompt the user to enter the distance run each day in kilometres",
+        "repeat this input process for 5 days",
+        "add each daily distance to a running total",
+        "output the total distance covered"
+      ],
+      "answer": "total_distance = 0.0\nfor day in range(1, 6):\n    distance = float(input(\"Enter distance for day \" + str(day) + \" in km: \"))\n    total_distance = total_distance + distance\n\nprint(\"Total distance run:\", total_distance, \"km\")",
+      "testInputs": ["5.5", "4.0", "6.2", "3.1", "5.0"],
+      "expectedOutputPattern": "23\\.8"
+    }
+  ];
+
+  const whileQuestions = [
+    {
+      "short": "Sum numbers until -1 is entered",
+      "body": "calculate the total of a list of integers entered by the user until a sentinel value is entered.",
+      "steps": [
+        "prompt the user to enter an integer",
+        "repeatedly take inputs until the user enters -1",
+        "add each integer (except -1) to a running total",
+        "output the final total in an appropriate message"
+      ],
+      "answer": "total = 0\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    total = total + number\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nprint(\"Total of all numbers entered:\", total)",
+      "testInputs": ["10", "20", "30", "-1"],
+      "expectedOutputPattern": "60"
+    },
+    {
+      "short": "Count numbers until 0 is entered",
+      "body": "count how many integers are entered by the user until they enter 0.",
+      "steps": [
+        "prompt the user to enter an integer",
+        "repeatedly take inputs until the user enters 0",
+        "count how many integers are entered (not including the final 0)",
+        "output the count in an appropriate message"
+      ],
+      "answer": "count = 0\nnumber = int(input(\"Enter an integer (0 to finish): \"))\nwhile number != 0:\n    count = count + 1\n    number = int(input(\"Enter an integer (0 to finish): \"))\n\nprint(\"Number of integers entered:\", count)",
+      "testInputs": ["5", "10", "15", "20", "0"],
+      "expectedOutputPattern": "4"
+    },
+    {
+      "short": "Password check until correct",
+      "body": "keep asking the user for a password until the correct password is entered. (Assuming correct is 'secret').",
+      "steps": [
+        "prompt the user to enter a password",
+        "repeatedly take inputs until the user enters the correct password",
+        "output an appropriate message when the correct password is entered"
+      ],
+      "answer": "password = input(\"Enter password: \")\nwhile password != \"secret\":\n    print(\"Incorrect password.\")\n    password = input(\"Enter password: \")\n\nprint(\"Access granted.\")",
+      "testInputs": ["wrong1", "wrong2", "secret"],
+      "expectedOutputPattern": "Access granted"
+    },
+    {
+      "short": "Countdown using a loop",
+      "body": "output a countdown from a starting number down to 0.",
+      "steps": [
+        "prompt the user to enter a starting integer",
+        "repeatedly output the current value and decrease it by 1",
+        "continue this process until the value reaches 0",
+        "output an appropriate final message"
+      ],
+      "answer": "n = int(input(\"Enter starting value: \"))\nwhile n >= 0:\n    print(n)\n    n = n - 1\n\nprint(\"Countdown finished.\")",
+      "testInputs": ["3"],
+      "expectedOutputPattern": "Countdown finished"
+    },
+    {
+      "short": "Sum values until total is at least 100",
+      "body": "keep adding integers entered by the user until the total reaches at least 100.",
+      "steps": [
+        "set the running total to 0",
+        "repeat this process while the total is less than 100",
+        "inside the loop, prompt the user to enter an integer and add it to the total",
+        "output the final total in an appropriate message"
+      ],
+      "answer": "total = 0\nwhile total < 100:\n    number = int(input(\"Enter an integer: \"))\n    total = total + number\n\nprint(\"Final total (at least 100):\", total)",
+      "testInputs": ["40", "50", "15"],
+      "expectedOutputPattern": "105"
+    },
+    {
+      "short": "Repeat until an even number is entered",
+      "body": "keep asking the user to enter a number until they enter an even number.",
+      "steps": [
+        "prompt the user to enter an integer",
+        "repeatedly take inputs while the number is odd",
+        "output the even number in an appropriate message when it is entered"
+      ],
+      "answer": "number = int(input(\"Enter an integer: \"))\nwhile number % 2 != 0:\n    print(\"That number is odd.\")\n    number = int(input(\"Enter an integer: \"))\n\nprint(\"Even number entered:\", number)",
+      "testInputs": ["3", "5", "7", "8"],
+      "expectedOutputPattern": "8"
+    },
+    {
+      "short": "Menu selection until exit chosen",
+      "body": "display a cafe ordering menu repeatedly until the user chooses to exit.",
+      "steps": [
+        "display a menu with options to order Coffee, Tea, Pastry, and Exit",
+        "prompt the user to enter their choice",
+        "repeatedly display the menu and read the choice until the user chooses the exit option (4)",
+        "output a closing message when the program ends"
+      ],
+      "answer": "choice = 0\nwhile choice != 4:\n    print(\"1. Order Coffee\")\n    print(\"2. Order Tea\")\n    print(\"3. Order Pastry\")\n    print(\"4. Exit\")\n    choice = int(input(\"Enter your choice: \"))\n\nprint(\"Have a great day!\")",
+      "testInputs": ["1", "3", "4"],
+      "expectedOutputPattern": "Have a great day"
+    },
+    {
+      "short": "Guessing game until correct",
+      "body": "allow the user to guess a secret number until they guess correctly.",
+      "steps": [
+        "store a secret number in a variable",
+        "prompt the user to enter a guess",
+        "repeatedly take inputs until the user guesses the secret number",
+        "output an appropriate message when the correct number is guessed"
+      ],
+      "answer": "secret = 12\nguess = int(input(\"Guess the number: \"))\nwhile guess != secret:\n    print(\"Incorrect guess.\")\n    guess = int(input(\"Guess the number: \"))\n\nprint(\"Correct! The number was\", secret)",
+      "testInputs": ["5", "20", "12"],
+      "expectedOutputPattern": "Correct.*12"
+    },
+    {
+      "short": "Average of values until -1 entered",
+      "body": "calculate the average of a list of integers entered by the user until a sentinel value is entered.",
+      "steps": [
+        "prompt the user to enter an integer",
+        "repeatedly take inputs until the user enters -1",
+        "keep a running total and a count of how many integers are entered (except -1)",
+        "calculate and output the average in an appropriate message"
+      ],
+      "answer": "total = 0\ncount = 0\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    total = total + number\n    count = count + 1\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nif count > 0:\n    average = total / count\n    print(\"Average of numbers entered:\", average)\nelse:\n    print(\"No numbers were entered.\")",
+      "testInputs": ["10", "20", "30", "40", "-1"],
+      "expectedOutputPattern": "25\\.0"
+    },
+    {
+      "short": "Find maximum until -1 entered",
+      "body": "find the largest integer entered by the user until a sentinel value is entered.",
+      "steps": [
+        "prompt the user to enter an integer",
+        "repeatedly take inputs until the user enters -1",
+        "keep track of the largest integer entered (except -1)",
+        "output the largest integer in an appropriate message"
+      ],
+      "answer": "maximum = -9999\nnumber = int(input(\"Enter an integer (-1 to finish): \"))\nwhile number != -1:\n    if number > maximum:\n        maximum = number\n    number = int(input(\"Enter an integer (-1 to finish): \"))\n\nif maximum != -9999:\n    print(\"Largest number entered:\", maximum)\nelse:\n    print(\"No numbers were entered.\")",
+      "testInputs": ["10", "50", "25", "5", "-1"],
+      "expectedOutputPattern": "50"
+    },
+    {
+      "short": "Target savings tracker",
+      "body": "help a user track their savings towards a $500 target by repeatedly asking for deposit amounts until the goal is reached.",
+      "steps": [
+        "set the initial savings total to 0",
+        "repeatedly prompt the user for deposit amounts while savings are less than 500",
+        "add each deposit to the running total",
+        "output a congratulatory message when the $500 target is hit or exceeded"
+      ],
+      "answer": "savings = 0.0\nwhile savings < 500:\n    deposit = float(input(\"Enter deposit amount: $\"))\n    savings = savings + deposit\n\nprint(\"Goal reached! Total saved: $\", savings)",
+      "testInputs": ["200", "150", "200"],
+      "expectedOutputPattern": "550\\.0"
+    },
+    {
+      "short": "RPG monster battle",
+      "body": "simulate a simple RPG battle where the player repeatedly attacks a monster with 50 HP until its health drops to 0 or below.",
+      "steps": [
+        "set the monster's starting health to 50",
+        "prompt the player to enter the damage dealt in that turn and subtract it from the health",
+        "repeatedly take damage inputs and subtract them from the health until the monster's health drops to 0 or below",
+        "output a victory message when the monster is defeated"
+      ],
+      "answer": "monster_hp = 50\nwhile monster_hp > 0:\n    damage = int(input(\"Enter damage dealt this turn: \"))\n    monster_hp = monster_hp - damage\n    print(\"Monster HP is now\", monster_hp)\n\nprint(\"The monster has been defeated!\")",
+      "testInputs": ["20", "15", "20"],
+      "expectedOutputPattern": "defeated"
+    },
+    {
+      "short": "Elevator capacity check",
+      "body": "load passengers into an elevator one by one, asking for their weight, until the total weight exceeds the maximum safe capacity of 800kg.",
+      "steps": [
+        "set the initial total weight to 0",
+        "repeat this process as long as the total weight is under 800",
+        "prompt for a passenger's weight and add it to the total",
+        "output a warning message when the elevator becomes overloaded"
+      ],
+      "answer": "total_weight = 0\nwhile total_weight <= 800:\n    weight = int(input(\"Enter passenger weight in kg: \"))\n    total_weight = total_weight + weight\n\nprint(\"Warning: Elevator capacity exceeded! Total weight:\", total_weight, \"kg\")",
+      "testInputs": ["300", "300", "250"],
+      "expectedOutputPattern": "850"
+    },
+    {
+      "short": "Filling a water tank",
+      "body": "simulate filling a 100-litre water tank. Continuously ask the user how many litres of water they want to add until the tank is completely full.",
+      "steps": [
+        "set the current tank volume to 0",
+        "repeatedly ask for water while the volume is less than 100",
+        "prompt the user for the amount to add and increase the volume",
+        "output a message indicating the tank is full when the loop finishes"
+      ],
+      "answer": "volume = 0\nwhile volume < 100:\n    add_water = int(input(\"How many litres to add? \"))\n    volume = volume + add_water\n    print(\"Current volume:\", volume, \"litres\")\n\nprint(\"The tank is now full.\")",
+      "testInputs": ["40", "40", "30"],
+      "expectedOutputPattern": "full"
+    },
+    {
+      "short": "Class representative voting",
+      "body": "tally votes for a class representative. The user enters a candidate's name to cast a vote, or types 'close' to end the voting process.",
+      "steps": [
+        "set the total vote count to 0",
+        "prompt the user to enter a candidate's name or 'close'",
+        "repeatedly accept votes until the user types 'close'",
+        "increment the vote count for every valid entry before prompting again",
+        "output the final number of votes cast"
+      ],
+      "answer": "total_votes = 0\nvote = input(\"Enter candidate name (or 'close' to finish): \")\nwhile vote.lower() != 'close':\n    total_votes = total_votes + 1\n    vote = input(\"Enter candidate name (or 'close' to finish): \")\n\nprint(\"Voting closed. Total votes cast:\", total_votes)",
+      "testInputs": ["Alice", "Bob", "Charlie", "Alice", "close"],
+      "expectedOutputPattern": "4"
+    },
+    {
+      "short": "Validate student age",
+      "body": "keep prompting the user to enter a student's age until a valid age between 11 and 18 inclusive is provided.",
+      "steps": [
+        "prompt the user to enter an age",
+        "repeatedly take inputs while the age is less than 11 or greater than 18",
+        "output an error message inside the loop for invalid ages",
+        "output a success message when a valid age is entered"
+      ],
+      "answer": "age = int(input(\"Enter student age (11-18): \"))\nwhile age < 11 or age > 18:\n    print(\"Invalid age. Must be between 11 and 18.\")\n    age = int(input(\"Enter student age (11-18): \"))\n\nprint(\"Valid age accepted.\")",
+      "testInputs": ["9", "25", "15"],
+      "expectedOutputPattern": "Valid age accepted"
+    },
+    {
+      "short": "Count passes until negative entered",
+      "body": "count how many students passed a test (scored 50 or more) from a list of scores entered by the user, stopping when a negative number is entered.",
+      "steps": [
+        "prompt the user to enter a test score",
+        "repeatedly take inputs until a negative score is entered",
+        "check if the score is 50 or higher and increment a pass counter if it is",
+        "output the total number of passes in an appropriate message"
+      ],
+      "answer": "passes = 0\nscore = int(input(\"Enter test score (-1 to finish): \"))\nwhile score >= 0:\n    if score >= 50:\n        passes = passes + 1\n    score = int(input(\"Enter test score (-1 to finish): \"))\n\nprint(\"Total students who passed:\", passes)",
+      "testInputs": ["60", "40", "80", "20", "-1"],
+      "expectedOutputPattern": "2"
+    },
+    {
+      "short": "Bus passenger boarding",
+      "body": "load groups of passengers onto a bus until the total number of passengers reaches or exceeds the maximum capacity of 50.",
+      "steps": [
+        "set the total passenger count to 0",
+        "repeatedly prompt for the number of boarding passengers while the total is under 50",
+        "add the new passengers to the running total",
+        "output a message when the bus is full"
+      ],
+      "answer": "total_passengers = 0\nwhile total_passengers < 50:\n    boarding = int(input(\"Enter number of passengers boarding: \"))\n    total_passengers = total_passengers + boarding\n\nprint(\"The bus is now full. Total passengers:\", total_passengers)",
+      "testInputs": ["20", "20", "15"],
+      "expectedOutputPattern": "55"
+    },
+    {
+      "short": "Fundraising goal tracker",
+      "body": "track charity donations by continually asking for donation amounts until the total raised reaches at least $1000.",
+      "steps": [
+        "set the initial total raised to 0",
+        "repeat the process while the total raised is less than 1000",
+        "prompt the user for a donation amount and add it to the total",
+        "output a congratulatory message when the target is reached"
+      ],
+      "answer": "total_raised = 0.0\nwhile total_raised < 1000:\n    donation = float(input(\"Enter donation amount: $\"))\n    total_raised = total_raised + donation\n\nprint(\"Target reached! Total raised: $\", total_raised)",
+      "testInputs": ["500", "400", "250"],
+      "expectedOutputPattern": "1150\\.0"
+    },
+    {
+      "short": "Printer paper usage",
+      "body": "simulate a printer using paper. Start with 500 sheets and repeatedly ask how many sheets a print job requires until the paper runs out.",
+      "steps": [
+        "set the starting paper count to 500",
+        "repeatedly ask for the pages needed for a print job while paper count is greater than 0",
+        "subtract the required pages from the total paper count",
+        "output a warning message when the printer is out of paper"
+      ],
+      "answer": "paper = 500\nwhile paper > 0:\n    job = int(input(\"Enter pages required for print job: \"))\n    paper = paper - job\n    if paper > 0:\n        print(\"Sheets remaining:\", paper)\n\nprint(\"Warning: Printer is out of paper!\")",
+      "testInputs": ["200", "200", "150"],
+      "expectedOutputPattern": "out of paper"
+    }
+  ];
+
+  // --- UI SETUP ---
+  const forList = document.getElementById("forLoopList");
+  const whileList = document.getElementById("whileLoopList");
+  const questionText = document.getElementById("questionText");
+  const answerBox = document.getElementById("answerBox");
+  const answerReveal = document.getElementById("answerReveal");
+  const meta = document.getElementById("meta");
+  const outputContainer = document.getElementById("outputContainer");
+
+  let currentType = null;
+  let currentIndex = -1;
+  let isTestingMode = false;
+  let testInputIndex = 0;
+  let capturedOutput = "";
+
+  function buildQuestionHTML(q) {
+    if (!q) return "<em>Question data missing.</em>";
+    let html = "";
+    html += "<p>An algorithm is required to " + q.body + "</p>";
+    html += "<p>Write an algorithm to:</p><ul>";
+    q.steps.forEach(step => {
+      html += "<li>" + step + "</li>";
+    });
+    html += "</ul>";
+    html += "<p>You must use either OCR Exam Reference Language or Python.</p>";
+    return html;
+  }
+
+  function populateLists() {
+    forQuestions.forEach((q, i) => {
+      const li = document.createElement("li");
+      li.textContent = (i + 1) + ". " + q.short;
+      li.dataset.type = "for";
+      li.dataset.index = i;
+      forList.appendChild(li);
+    });
+    whileQuestions.forEach((q, i) => {
+      const li = document.createElement("li");
+      li.textContent = (i + 1) + ". " + q.short;
+      li.dataset.type = "while";
+      li.dataset.index = i;
+      whileList.appendChild(li);
+    });
+  }
+
+  populateLists();
+
+  document.querySelectorAll(".accordion-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const content = header.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  });
+
+  function loadQuestion(type, index) {
+    currentType = type;
+    currentIndex = index;
+
+    document.querySelectorAll(".question-list li").forEach(li => li.classList.remove("active"));
+    const selector = '.question-list li[data-type="' + type + '"][data-index="' + index + '"]';
+    const activeItem = document.querySelector(selector);
+    if (activeItem) activeItem.classList.add("active");
+
+    const q = (type === "for" ? forQuestions : whileQuestions)[index];
+    questionText.innerHTML = buildQuestionHTML(q);
+    meta.textContent = "Question " + (index + 1) + " (" + type.toUpperCase() + " loop)";
+    
+    // Reset answers and outputs
+    answerBox.value = "";
+    answerReveal.style.display = "none";
+    outputContainer.style.display = "none";
+    outputContainer.innerHTML = "";
+    outputContainer.classList.remove("error", "success");
+  }
+
+  document.addEventListener("click", (e) => {
+    if (e.target.matches(".question-list li")) {
+      const type = e.target.dataset.type;
+      const index = parseInt(e.target.dataset.index, 10);
+      loadQuestion(type, index);
+    }
+  });
+
+  document.getElementById("clearAnswer").onclick = () => {
+    answerBox.value = "";
+    outputContainer.style.display = "none";
+    outputContainer.innerHTML = "";
+  };
+
+  document.getElementById("checkAnswer").onclick = () => {
+    if (currentIndex < 0) return;
+    const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
+    if(q) {
+      answerReveal.textContent = q.answer;
+      answerReveal.style.display = "block";
+    }
+  };
+
+  document.getElementById("prevQuestion").onclick = () => {
+    if (currentIndex < 0) return;
+    const arr = currentType === "for" ? forQuestions : whileQuestions;
+    const newIndex = (currentIndex - 1 + arr.length) % arr.length;
+    loadQuestion(currentType, newIndex);
+  };
+
+  document.getElementById("nextQuestion").onclick = () => {
+    if (currentIndex < 0) return;
+    const arr = currentType === "for" ? forQuestions : whileQuestions;
+    const newIndex = (currentIndex + 1) % arr.length;
+    loadQuestion(currentType, newIndex);
+  };
+
+  // --- SKULPT INTEGRATION & TESTING ---
+
+  // Function to capture standard output
+  function outf(text) {
+    capturedOutput += text;
+    outputContainer.innerHTML += text;
+  }
+
+  function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+      throw "File not found: '" + x + "'";
+    }
+    return Sk.builtinFiles["files"][x];
+  }
+
+  // Unified input function for both manual running and testing
+  function skulptInput(promptText) {
+    return new Promise((resolve, reject) => {
+      if (isTestingMode) {
+        // Find current question to pull test inputs
+        const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
+        
+        if (q && q.testInputs && testInputIndex < q.testInputs.length) {
+          const testVal = q.testInputs[testInputIndex++];
+          // Echo the prompt and auto-fill the test value
+          outf(promptText + testVal + "\n");
+          resolve(testVal);
+        } else {
+          outf(promptText + "[Ran out of test inputs]\n");
+          resolve("");
+        }
+      } else {
+        // Interactive mode using window prompt
+        let userInput = window.prompt(promptText);
+        let safeInput = userInput !== null ? userInput : "";
+        // Echo the prompt and user's answer into the console
+        outf(promptText + safeInput + "\n");
+        resolve(safeInput);
+      }
+    });
+  }
+
+  // Helper to execute Python via Skulpt
+  function executePython(code) {
+    Sk.pre = "outputContainer";
+    Sk.configure({
+      output: outf,
+      read: builtinRead,
+      inputfun: skulptInput
+    });
+
+    return Sk.misceval.asyncToPromise(() => {
+      return Sk.importMainWithBody("<stdin>", false, code, true);
+    });
+  }
+
+  // 1. Run Interactive Code
+  document.getElementById("runCode").addEventListener("click", () => {
+    const code = answerBox.value;
+    
+    isTestingMode = false;
+    capturedOutput = "";
+    outputContainer.style.display = "block";
+    outputContainer.innerHTML = "<i>Running Code...</i>\n\n";
+    outputContainer.classList.remove("error", "success");
+
+    if (!code.trim()) {
+      outputContainer.innerHTML = "No code to run.";
+      return;
+    }
+
+    executePython(code).then(
+      function(mod) {
+         if (capturedOutput.trim() === "<i>Running Code...</i>") {
+           outputContainer.innerHTML += "<i>[Program finished with no output]</i>";
+         }
+      },
+      function(err) {
+        outputContainer.classList.add("error");
+        outputContainer.innerHTML += "\n" + err.toString();
+      }
+    );
+  });
+
+  // 2. Run Auto-Grade Test
+  document.getElementById("runTest").addEventListener("click", () => {
+    if (currentIndex < 0) {
+      alert("Please select a question first!");
+      return;
+    }
+
+    const code = answerBox.value;
+    if (!code.trim()) {
+      alert("Please write some code before testing!");
+      return;
+    }
+
+    const q = (currentType === "for" ? forQuestions : whileQuestions)[currentIndex];
+    
+    isTestingMode = true;
+    testInputIndex = 0;
+    capturedOutput = "";
+    
+    outputContainer.style.display = "block";
+    outputContainer.innerHTML = "<i>Running Auto-Grader...</i>\n\n";
+    outputContainer.classList.remove("error", "success");
+
+    executePython(code).then(
+      function(mod) {
+        // Test finished, check output against Regex
+        const regex = new RegExp(q.expectedOutputPattern, "i"); // "i" makes it case-insensitive
+        
+        if (regex.test(capturedOutput)) {
+          outputContainer.innerHTML += "\n\n✅ TEST PASSED! Your output matches the expected result.";
+          outputContainer.classList.add("success");
+        } else {
+          outputContainer.innerHTML += "\n\n❌ TEST FAILED. Your output did not match what we expected to see.";
+          outputContainer.classList.add("error");
+        }
+      },
+      function(err) {
+        outputContainer.classList.add("error");
+        outputContainer.innerHTML += "\n\n❌ ERROR: " + err.toString();
+      }
+    );
+  });
+
+</script>
+</body>
+</html>
